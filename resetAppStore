@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+# Reset to default AppStore by removing AS specific settings
+# A.) delete: '/Library/Managed Preferences'
+# B.) delete: '/Library/Preferences/com.apple.SoftwareUpdate.plist'
+# 
+
+echo "This script will execute:"
+echo sudo /bin/rm -rf '/Library/Managed Preferences'
+echo sudo /bin/rm -rf '/Library/Preferences/com.apple.SoftwareUpdate.plist'
+echo ""
+echo "= Hit any key to continue - ctrl-C to interrupt"
+read -n 1 -e -p "> "
+echo ""
+
+sudo /bin/rm -rf '/Library/Managed Preferences'
+sudo /bin/rm -rf '/Library/Preferences/com.apple.SoftwareUpdate.plist'
+
+
+#
+##

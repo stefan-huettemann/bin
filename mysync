@@ -1,0 +1,56 @@
+#!/bin/bash
+
+SELF=`basename $0` 
+
+function error() {
+	echo ${SELF} " - [ERROR]: " $* 
+	echo ${SELF} " - exiting."
+	exit 1
+}
+
+if [ ! -e .sync ]; then
+	error "No '.sync' file found."
+fi
+
+SYNC_DIR=`cat .sync`;
+if [ ! -e "${SYNC_DIR}" ]; then 
+	error "Sync Volume failure." "${SYNC_DIR}"
+fi
+
+if [ "pull" = `basename $0` ]; then
+	SRC="${SYNC_DIR}"
+	DST=.
+fi
+if [ "push" = `basename $0` ]; then
+	DST="${SYNC_DIR}"
+	SRC=.
+fi
+
+# check for git control
+if [ -e "${SRC}"/.git -a -e "${DST}"/.git ]; then
+	echo "WARN: Volume seems under GIT control."
+	echo -n "Do you want to (C)ontinue or (A)bort? "
+	read -e -n 1 IN
+	if [ "C" != "${IN}" ]; then
+		echo "aborting ..."
+		exit 1
+	fi
+fi
+
+# build ignore list
+TMPFILE=`mktemp /tmp/${tempfoo}.XXXXXX` || exit 1
+
+if [ -e ${HOME}/.mysyncignore ]; then
+	cat ${HOME}/.mysyncignore >> ${TMPFILE}
+fi
+if [ -e "${SRC}"/.gitignore ]; then
+	cat "${SRC}"/.gitignore >> ${TMPFILE}
+fi
+
+rsync $* -rlptgoD --update --progress --backup --backup-dir=.BACKUP --exclude-from=${TMPFILE} "${SRC}" "${DST}"
+
+rm -f ${TMPFILE}
+
+exit 0
+#
+##

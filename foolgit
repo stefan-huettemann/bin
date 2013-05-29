@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# make git add effectivly empty dirs by adding a hidden file (sic!)
+
+if [ "-n" = "$1" ]; then
+	find . -type d -empty -not -path "*.git*"
+else
+	find . -type d -empty -not -path "*.git*" -exec touch {}/.foolgit \;
+fi
+
+#
+##
