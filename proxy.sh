@@ -15,10 +15,12 @@ if [ "on" == "$1" ]; then
 
  # mvn settings:
  # maven:
+(
  cd ~/.m2
  rm settings.xml
  ln -s settings.xml.asv.local settings.xml
  cd -
+)
 fi
 
 if [ "off" == "$1" ]; then
@@ -29,10 +31,12 @@ if [ "off" == "$1" ]; then
  #_JAVA_OPTIONS=""
 
  # maven:
+(
  cd ~/.m2
  rm settings.xml
  ln -s settings.xml.noproxy settings.xml
  cd -
+)
 fi
 
 export http_proxy
@@ -44,6 +48,6 @@ export RSYNC_PROXY
 # echo:
 env | grep -i proxy
 printf "%s" "mvn:" && (ls -l ~/.m2/settings.xml|/usr/bin/awk -F '->' '{print $2}')
-(javac ProxyTest.java && java ProxyTest)
+(cd ~/bin && javac ProxyTest.java && java ProxyTest)
 #
 ##
