@@ -14,7 +14,7 @@ fi
 
 SYNC_DIR=`cat .sync`;
 if [ ! -e "${SYNC_DIR}" ]; then 
-	error "Sync Volume failure." "${SYNC_DIR}"
+	error "Sync volume does not exist:" "${SYNC_DIR}"
 fi
 
 if [ "pull" = `basename $0` ]; then

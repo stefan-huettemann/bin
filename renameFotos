@@ -1,0 +1,1 @@
+ls -lT *.JPG|grep Aug|awk -F ' ' '{printf "%s %s 2013-08-%02d-Annika-%s.JPG\n", "mv", $NF,$6, $8}'|sed 's/:/./g'

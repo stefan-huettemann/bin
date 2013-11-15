@@ -1,0 +1,22 @@
+#!/bin/bash
+
+TMPFILE=`mktemp /tmp/${tempfoo}.XXXXXX` || exit 1
+
+# build ignore list
+echo '.git*' >> ${TMPFILE}
+echo '.BACKUP' >> ${TMPFILE}
+echo '.sync' >> ${TMPFILE}
+echo '*~' >> ${TMPFILE}
+echo '.DS_Store' >> ${TMPFILE}
+echo '._*' >> ${TMPFILE}
+echo '.Apple*' >> ${TMPFILE}
+
+if [ "$1" == "-n" ]; then
+	rsync -n -rltpz --progress -e "ssh -l root" --exclude-from=${TMPFILE} --delete /Users/shuettem/Music/iTunes/ mybooklive:"/shares/Public/Shared\ Music/iTunes/"
+else
+	rsync -rltpz --progress -e "ssh -l root" --exclude-from=${TMPFILE} --delete /Users/shuettem/Music/iTunes/ mybooklive:"/shares/Public/Shared\ Music/iTunes/"
+fi
+
+rm -f ${TMPFILE}
+#
+##
