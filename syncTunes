@@ -12,9 +12,9 @@ echo '._*' >> ${TMPFILE}
 echo '.Apple*' >> ${TMPFILE}
 
 if [ "$1" == "-n" ]; then
-	rsync -n -rltpz --progress -e "ssh -l root" --exclude-from=${TMPFILE} --delete /Users/shuettem/Music/iTunes/ mybooklive:"/shares/Public/Shared\ Music/iTunes/"
+	rsync -n -rltpz --progress -e "ssh -l root" --exclude-from=${TMPFILE} --delete ${HOME}/Music/iTunes/ mybooklive:"/shares/Public/Shared\ Music/iTunes/"
 else
-	rsync -rltpz --progress -e "ssh -l root" --exclude-from=${TMPFILE} --delete /Users/shuettem/Music/iTunes/ mybooklive:"/shares/Public/Shared\ Music/iTunes/"
+	rsync -rltpz --progress -e "ssh -l root" --exclude-from=${TMPFILE} --delete ${HOME}/Music/iTunes/ mybooklive:"/shares/Public/Shared\ Music/iTunes/"
 fi
 
 rm -f ${TMPFILE}
