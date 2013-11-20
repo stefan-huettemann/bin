@@ -7,7 +7,7 @@ public static void main(String[] args) {
 	System.out.println("  http.proxyPort: " + System.getProperty("http.proxyPort"));
 	System.out.println("  https.proxyHost: " + System.getProperty("https.proxyHost"));
 	System.out.println("  https.proxyPort: " + System.getProperty("https.proxyPort"));
-	System.out.println("  NOTE: '_JAVA_OPTIONS=-Dhttp.proxyHost=<your.proxy> -Dhttp.proxyPort=<port>'");
+	System.out.println("\nNOTE: '_JAVA_OPTIONS=-Dhttp.proxyHost=<your.proxy> -Dhttp.proxyPort=<port>'");
  
 }
 }

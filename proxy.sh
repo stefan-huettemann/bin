@@ -48,6 +48,7 @@ export RSYNC_PROXY
 # echo:
 env | grep -i proxy
 printf "%s" "mvn:" && (ls -l ~/.m2/settings.xml|/usr/bin/awk -F '->' '{print $2}')
+printf "\n"
 (cd ~/bin && javac ProxyTest.java && java ProxyTest)
 #
 ##
