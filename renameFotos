@@ -3,5 +3,5 @@ ls -lT *.JPG|grep Aug|awk -F ' ' '{printf "%s %s 2013-08-%02d-Annika-%s.JPG\n", 
 #
 # even better using 'stat':
 # NOTE: watch out for the colon ... TODO! 
-for f in DSC_*; do mv "$f" `stat -t "%F-%T" -f "%SB-%N" "$f"|sed 's/DSC_/Marlon-/'`; done
+for f in DSC_*; do echo mv "$f" `stat -t "%F-%T" -f "%SB-%N" "$f"|sed 's/DSC_/Marlon-/'`; done
 
