@@ -1,0 +1,41 @@
+#!/bin/bash
+
+#
+# Cleanup utility after importing from NIKON D3200 SD
+#
+
+# 1. chmod 644 - remove the x bit
+# 2. change ending to lower-case (JPG,MOV)->(jpg,mov)
+# 3. filename: add file creation date to filename
+
+# process NIKON Photos (JPG)
+for f in DSC_*.JPG; do 
+	if [ -e $f ]; then
+		chmod 644 $f
+		mv -n -v $f `stat -t "%F-%H.%M.%S" -f "%SB-%N" ${f}|sed 's/\.JPG/\.jpg/'`
+	fi
+done
+
+# process iPhoto Photos (JPG)
+for f in IMG_*.JPG; do 
+	if [ -e $f ]; then
+		chmod 644 $f
+		mv -n -v $f `stat -t "%F-%H.%M.%S" -f "%SB-%N" ${f}|sed 's/\.JPG/\.jpg/'`
+	fi
+done
+
+# process NIKON Movie (MOV)
+for f in DSC_*.MOV; do 
+	if [ -e $f ]; then
+		chmod 644 $f
+		mv -n -v $f `stat -t "%F-%H.%M.%S" -f "%SB-%N" ${f}|sed 's/\.MOV/\.mov/'`
+	fi
+done
+
+# process iPhone Movie (MOV)
+for f in IMG_*.MOV; do 
+	if [ -e $f ]; then
+		chmod 644 $f
+		mv -n -v $f `stat -t "%F-%H.%M.%S" -f "%SB-%N" ${f}|sed 's/\.MOV/\.mov/'`
+	fi
+done
