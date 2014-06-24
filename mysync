@@ -1,5 +1,15 @@
 #!/bin/bash
 
+#
+# changes:
+# - modify for use with WD myBook device
+# - using rsync to sync local storage with WD 'mybooklive'
+# - use-case only to store/backup media files (music,pictures,movies)
+#
+
+# bash debugging:
+#set -v
+
 SELF=`basename $0` 
 
 function error() {
@@ -11,44 +21,41 @@ function error() {
 if [ ! -e .sync ]; then
 	error "No '.sync' file found."
 fi
-
 SYNC_DIR=`cat .sync`;
-if [ ! -e "${SYNC_DIR}" ]; then 
-	error "Sync volume does not exist:" "${SYNC_DIR}"
-fi
 
-if [ "pull" = `basename $0` ]; then
-	SRC="${SYNC_DIR}"
-	DST=.
-fi
-if [ "push" = `basename $0` ]; then
+if [ "push" = ${SELF} ]; then
+	SRC=`pwd`/
 	DST="${SYNC_DIR}"
-	SRC=.
+fi
+if [ "pull" = ${SELF} ]; then
+	SRC="${SYNC_DIR}"
+	DST=`pwd`/
 fi
 
-# check for git control
-if [ -e "${SRC}"/.git -a -e "${DST}"/.git ]; then
-	echo "WARN: Volume seems under GIT control."
-	echo -n "Do you want to (C)ontinue or (A)bort? "
-	read -e -n 1 IN
-	if [ "C" != "${IN}" ]; then
-		echo "aborting ..."
-		exit 1
-	fi
+printf "INFO: about to ${SELF}\n\t from ${SRC}\n\t to ${DST}\n\n"
+echo -n "Do you want to (C)ontinue or (A)bort? "
+read -e -n 1 IN
+printf "\n"
+if [ "C" != "${IN}" ]; then
+	echo "aborting ..."
+	exit 1
 fi
 
 # build ignore list
-TMPFILE=`mktemp /tmp/${tempfoo}.XXXXXX` || exit 1
+TMPFILE=`mktemp /tmp/${SELF}.XXXXXX` || exit 1
 
 if [ -e ${HOME}/.mysyncignore ]; then
 	cat ${HOME}/.mysyncignore >> ${TMPFILE}
 fi
-if [ -e "${SRC}"/.gitignore ]; then
-	cat "${SRC}"/.gitignore >> ${TMPFILE}
+if [ -e ./.mysyncignore ]; then
+	cat ./.mysyncignore >> ${TMPFILE}
 fi
 
-rsync $* -rlptgoD --update --progress --backup --backup-dir=.BACKUP --exclude-from=${TMPFILE} "${SRC}" "${DST}"
+# exec cmd: IMPORTANT -- keep echo and cmd in sync ...
+echo rsync $* -rlpt --progress -e \"ssh -l root\" --exclude=.mysyncignore --exclude-from=${TMPFILE} "${SRC}" "${DST}"
+rsync $* -rlpt --progress -e "ssh -l root" --exclude=.mysyncignore --exclude-from=${TMPFILE} "${SRC}" "${DST}"
 
+#cleanup
 rm -f ${TMPFILE}
 
 exit 0
