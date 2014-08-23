@@ -39,3 +39,12 @@ for f in IMG_*.MOV; do
 		mv -n -v $f `stat -t "%F-%H.%M.%S" -f "%SB-%N" ${f}|sed 's/\.MOV/\.mov/'`
 	fi
 done
+
+# eliminate whitspace in filenames
+IFS=$'\n'
+for f in `find . -name "* *"`;  do
+	if [ -e $f ]; then
+		chmod 644 $f
+		mv -n -v $f `echo ${f}|sed 's/ /\-/'`
+	fi
+done
