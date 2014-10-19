@@ -9,7 +9,7 @@
 # 3. filename: add file creation date to filename
 
 # process NIKON Photos (JPG)
-for f in DSC_*.JPG; do 
+for f in DSC*.JPG; do 
 	if [ -e $f ]; then
 		chmod 644 $f
 		mv -n -v $f `stat -t "%F-%H.%M.%S" -f "%SB-%N" ${f}|sed 's/\.JPG/\.jpg/'`
@@ -17,7 +17,7 @@ for f in DSC_*.JPG; do
 done
 
 # process iPhoto Photos (JPG)
-for f in IMG_*.JPG; do 
+for f in IMG*.JPG; do 
 	if [ -e $f ]; then
 		chmod 644 $f
 		mv -n -v $f `stat -t "%F-%H.%M.%S" -f "%SB-%N" ${f}|sed 's/\.JPG/\.jpg/'`
@@ -25,7 +25,7 @@ for f in IMG_*.JPG; do
 done
 
 # process NIKON Movie (MOV)
-for f in DSC_*.MOV; do 
+for f in DSC*.MOV; do 
 	if [ -e $f ]; then
 		chmod 644 $f
 		mv -n -v $f `stat -t "%F-%H.%M.%S" -f "%SB-%N" ${f}|sed 's/\.MOV/\.mov/'`
@@ -33,7 +33,7 @@ for f in DSC_*.MOV; do
 done
 
 # process iPhone Movie (MOV)
-for f in IMG_*.MOV; do 
+for f in IMG*.MOV; do 
 	if [ -e $f ]; then
 		chmod 644 $f
 		mv -n -v $f `stat -t "%F-%H.%M.%S" -f "%SB-%N" ${f}|sed 's/\.MOV/\.mov/'`
