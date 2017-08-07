@@ -1,15 +1,19 @@
 #!/bin/bash
 # switch proxy settings on/off
+
+PROXY_HOST=localhost
+PROXY_PORT=8888
+
 if [ -z "$1" ]; then
-	echo "USAGE: proxy [on|off]"
+	echo "USAGE: proxy [on|off] (Defined PROXY = ${PROXY_HOST}:${PROXY_PORT})"
 	echo
 fi
 
 if [ "on" == "$1" ]; then
- ALL_PROXY="http://proxy.service.asv.local:8080"
- RSYNC_PROXY="http://proxy.service.asv.local:8080"
- http_proxy="http://proxy.service.asv.local:8080"
- https_proxy="http://proxy.service.asv.local:8080"
+ ALL_PROXY="http://${PROXY_HOST}:${PROXY_PORT}"
+ RSYNC_PROXY="http://${PROXY_HOST}:${PROXY_PORT}"
+ http_proxy="http://${PROXY_HOST}:${PROXY_PORT}"
+ https_proxy="http://${PROXY_HOST}:${PROXY_PORT}"
  # java picks up proxy from network settings
  #_JAVA_OPTIONS="-Dhttp.proxyHost=proxy.service.asv.local -Dhttp.proxyPort=8080"
 
@@ -18,7 +22,7 @@ if [ "on" == "$1" ]; then
 (
  cd ~/.m2
  rm settings.xml
- ln -s settings.xml.asv.local settings.xml
+ ln -s settings.xml.charles settings.xml
  cd -
 )
 fi

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ "$1" = "start" ]; then
+	launchctl load /Users/stefan/Library/LaunchAgents/com.mirth.connect.plist
+	exit 0
+fi
+
+if [ "$1" = "stop" ]; then
+	launchctl unload /Users/stefan/Library/LaunchAgents/com.mirth.connect.plist
+	exit 0
+fi
+
+if [ "$1" = "status" ]; then
+	launchctl list com.mirth.connect
+	exit 0
+fi
+
+echo "Usage: mirth start|stop|status"
+exit 1
+
+#
+##
