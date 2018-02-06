@@ -1,0 +1,8 @@
+#!/bin/bash
+if [ $(docker images|grep -c none) -gt 0 ]; then 
+	docker rmi $(docker images|grep none|awk '{print $3}')
+else
+	echo "No orphaned images found."
+fi
+#
+##
