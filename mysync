@@ -21,7 +21,7 @@ function error() {
 if [ ! -e .sync ]; then
 	error "No '.sync' file found."
 fi
-SYNC_DIR=`cat .sync`;
+SYNC_DIR=$(cat .sync|grep -v -e '^#')
 
 if [ "push" = ${SELF} ]; then
 	SRC=`pwd`/
@@ -52,8 +52,8 @@ if [ -e ./.mysyncignore ]; then
 fi
 
 # exec cmd: IMPORTANT -- keep echo and cmd in sync ...
-echo rsync $* -rlpt --progress -e \"ssh -l root\" --exclude=.mysyncignore --exclude-from=${TMPFILE} "${SRC}" "${DST}"
-rsync $* -rlpt --progress -e "ssh -l root" --exclude=.mysyncignore --exclude-from=${TMPFILE} "${SRC}" "${DST}"
+echo rsync $* -rplt --chmod=D777,F666 --progress -e \"ssh -l sshd\" --exclude=.mysyncignore --exclude-from=${TMPFILE} "${SRC}" "${DST}"
+rsync $* -rplt --chmod=D777,F666 --progress -e "ssh -l sshd" --exclude=.mysyncignore --exclude-from=${TMPFILE} "${SRC}" "${DST}"
 
 #cleanup
 rm -f ${TMPFILE}
