@@ -22,6 +22,8 @@ if [ ! -e .sync ]; then
 	error "No '.sync' file found."
 fi
 SYNC_DIR=$(cat .sync|grep -v -e '^#')
+HOST=${SYNC_DIR%:*}
+DIR=${SYNC_DIR#*:}
 
 if [ "push" = ${SELF} ]; then
 	SRC=`pwd`/
@@ -32,6 +34,8 @@ if [ "pull" = ${SELF} ]; then
 	DST=`pwd`/
 fi
 
+printf "INFO: use '-n' for 'dry-run'\n"
+printf "INFO: use '--del' to delete extranous files from dest dirs\n\n"
 printf "INFO: about to ${SELF}\n\t from ${SRC}\n\t to ${DST}\n\n"
 echo -n "Do you want to (C)ontinue or (A)bort? "
 read -e -n 1 IN
@@ -52,8 +56,13 @@ if [ -e ./.mysyncignore ]; then
 fi
 
 # exec cmd: IMPORTANT -- keep echo and cmd in sync ...
-echo rsync $* -rplt --chown :share --chmod=D777,F666 --progress -e \"ssh -l sshd\" --exclude=.mysyncignore --exclude-from=${TMPFILE} "${SRC}" "${DST}"
-rsync $* -rplt --chown :share --chmod=D777,F666 --progress -e "ssh -l sshd" --exclude=.mysyncignore --exclude-from=${TMPFILE} "${SRC}" "${DST}"
+echo rsync $* -rplt --chmod=D777,F666 --progress -e \"ssh -l sshd\" --exclude=.mysyncignore --exclude-from=${TMPFILE} "${SRC}" "${DST}"
+rsync $* -rplt --chmod=D777,F666 --progress -e "ssh -l sshd" --exclude=.mysyncignore --exclude-from=${TMPFILE} "${SRC}" "${DST}"
+
+if [ "push" = ${SELF} ]; then
+	printf "Repair group on WD Mycloud (cannot use --group):\n"
+	ssh sshd@${HOST} "find ${DIR} ! -group share -exec chown :share {} \;"
+fi
 
 #cleanup
 rm -f ${TMPFILE}
