@@ -48,3 +48,11 @@ for f in `find . -name "* *"`;  do
 		mv -n -v $f `echo ${f}|sed 's/ /\-/'`
 	fi
 done
+
+# process other files not starting with a date: "2..."
+for f in $(find . -depth 1 ! -name "2*" -exec basename {} \;); do 
+	if [ -e $f ]; then
+		chmod 644 $f
+		mv -n -v $f `stat -t "%F-%H.%M.%S" -f "%SB-%N" ${f}`
+	fi
+done
