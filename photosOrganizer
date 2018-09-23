@@ -1,0 +1,176 @@
+#!/bin/bash
+
+#
+# Orginize exports from macOS Photos App.
+#
+
+_SELF=${0##*/}
+
+function usage() {
+ printf "%s: %s\n" ${_SELF} "Organize media exported from macOS Photos App."
+}
+
+#
+# extract media original date-time from exif or file stats:
+function extractDate() {
+ d=$(exiftool -m -p '$DateTimeOriginal' -d "%Y-%m-%d-%H.%M.%S" -DateTimeOriginal $1)
+ if [ $? != 0 ]; then
+	 return -1
+ fi
+ if [ -z "$d" ]; then
+  d=$(stat -t "%F-%H.%M.%S" -f "%SB" $1)
+ fi
+ echo $d
+}
+
+#
+# cleanFilename:
+#
+# replace whitespace in filename with '-'
+# uppercase base name
+# lowercase extension
+function cleanFilename() {
+	_f=$(echo $1|sed -E 's/^[[:space:]]+//'|sed -E 's/[[:space:]]+/-/g')
+	_base=$(echo ${_f%.*}|tr '[:lower:]' '[:upper:]' )
+	_ext=$(echo ${_f##*.}|tr '[:upper:]' '[:lower:]')
+	echo $2-${_base}.${_ext}
+}
+
+#
+# determine target dir from filename and filetype (extension)
+# - photos go to ${HOME}/Pictures/<YEAR>
+# - movies go to ${HOME}/Movies/<YEAR>
+function targetDir() {
+ _T=$1
+ case "${_T##*.}" in
+	"jpg"|"png") 
+		_T=${HOME}/Pictures/${_T%%-*}
+		;;
+	"mp4"|"mov") 
+		_T=${HOME}/Movies/${_T%%-*}
+		;;
+ esac
+ echo ${_T}
+}
+
+# test run
+let ctotal=0
+let cprocs=0
+let cignor=0
+let cskips=0
+let cdupls=0
+
+IFS=$'\n'
+for p in $(find . -maxdepth 1 -type f ! -name ".*"); do  
+
+ let ctotal++
+
+ # get filname from path
+ f=${p##*/} 
+
+ # skip files assumed to be already renamed (but not moved)
+ if [[ $f =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}.*$ ]]; then
+	 let cignor++
+	 echo "$f ignored"
+	 continue
+ fi
+
+ chmod 644 $f
+
+ # rename
+ _d=$(extractDate $f)
+ if [ $? != 0 ]; then
+	 # skip unknown media file types
+	 let cskips++
+	 continue
+ fi
+ _f=$(cleanFilename $f $_d)
+
+ # determine target path
+ _t=$(targetDir ${_f})
+
+ # move stats
+ if [ -e ${_t}/${_f} ]; then
+ 	let cdupls++
+ else
+ 	let cprocs++
+ fi
+ # move
+ if [ ! -d ${_t} ]; then
+  mkdir -p ${_t}
+ fi
+ mv -v -n ${f} ${_t}/${_f}
+done
+
+# print stats:
+printf "\n== ${_SELF}:\n"
+printf "\t%-15s: %d\n" "total" $ctotal
+printf "\t%-15s: %d\n" "processed" $cprocs
+printf "\t%-15s: %d\n" "duplicates" $cdupls
+printf "\t%-15s: %d\n" "ingored" $cignor
+printf "\t%-15s: %d\n" "errors/skipped" $cskips
+
+exit 0;
+
+# =========== area 52 ======== 
+
+for f in *; do  	
+ d=$(exiftool -m -p '$DateTimeOriginal' -d "%Y-%m-%d-%H.%M.%S" -DateTimeOriginal $f)
+ if [ -z "$d" ]; then
+  d=$(stat -t "%F-%H.%M.%S" -f "%SB" ${f})
+ fi
+ printf "rename: %10s -> %s\n" $f $d-$f
+done
+
+# 1. chmod 644 - remove the x bit
+# 2. change ending to lower-case (JPG,MOV)->(jpg,mov)
+# 3. filename: add file creation date to filename
+
+# process NIKON Photos (JPG)
+for f in DSC*.JPG; do 
+	if [ -e $f ]; then
+		chmod 644 $f
+		mv -n -v $f `stat -t "%F-%H.%M.%S" -f "%SB-%N" ${f}|sed 's/\.JPG/\.jpg/'`
+	fi
+done
+
+# process iPhoto Photos (JPG)
+for f in IMG*.JPG; do 
+	if [ -e $f ]; then
+		chmod 644 $f
+		mv -n -v $f `stat -t "%F-%H.%M.%S" -f "%SB-%N" ${f}|sed 's/\.JPG/\.jpg/'`
+	fi
+done
+
+# process NIKON Movie (MOV)
+for f in DSC*.MOV; do 
+	if [ -e $f ]; then
+		chmod 644 $f
+		mv -n -v $f `stat -t "%F-%H.%M.%S" -f "%SB-%N" ${f}|sed 's/\.MOV/\.mov/'`
+	fi
+done
+
+# process iPhone Movie (MOV)
+for f in IMG*.MOV; do 
+	if [ -e $f ]; then
+		chmod 644 $f
+		mv -n -v $f `stat -t "%F-%H.%M.%S" -f "%SB-%N" ${f}|sed 's/\.MOV/\.mov/'`
+	fi
+done
+
+# eliminate whitspace in filenames
+IFS=$'\n'
+for f in `find . -name "* *"`;  do
+	if [ -e $f ]; then
+		chmod 644 $f
+		mv -n -v $f `echo ${f}|sed 's/ /\-/'`
+	fi
+done
+
+# process other files not starting with a date: "2..."
+for f in $(find . -depth 1 ! -name "2*" ! -name .DS_Store ! -name .dropbox ! -name Icon  -exec basename {} \;); do 
+	if [ -e $f ]; then
+		chmod 644 $f
+		mv -n -v $f `stat -t "%F-%H.%M.%S" -f "%SB-%N" ${f}`
+	fi
+done
