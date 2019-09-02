@@ -46,7 +46,7 @@ function targetDir() {
 	"jpg"|"png") 
 		_T=${HOME}/Pictures/${_T%%-*}
 		;;
-	"mp4"|"mov") 
+	"m4v"|"mp4"|"mov") 
 		_T=${HOME}/Movies/${_T%%-*}
 		;;
  esac
