@@ -50,7 +50,7 @@ for f in `find . -name "* *"`;  do
 done
 
 # process other files not starting with a date: "2..."
-for f in $(find . -depth 1 ! -name "2*" ! -name .DS_Store ! -name .dropbox ! -name Icon  -exec basename {} \;); do 
+for f in $(find . -depth 1 ! -name "2*" ! -name .DS_Store ! -name .dropbox ! -name "Icon*"  -exec basename {} \;); do 
 	if [ -e $f ]; then
 		chmod 644 $f
 		mv -n -v $f `stat -t "%F-%H.%M.%S" -f "%SB-%N" ${f}`
