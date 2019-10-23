@@ -45,7 +45,7 @@ IFS=$'\n'
 for f in `find . -name "* *"`;  do
 	if [ -e $f ]; then
 		chmod 644 $f
-		mv -n -v $f `echo ${f}|sed 's/ /\-/'`
+		mv -n -v $f `echo ${f}|sed 's/ /\-/g'`
 	fi
 done
 
