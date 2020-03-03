@@ -43,7 +43,7 @@ function cleanFilename() {
 function targetDir() {
  _T=$1
  case "${_T##*.}" in
-	"jpg"|"png") 
+	"jpg"|"jpeg"|"png"|"heic") 
 		_T=${HOME}/Pictures/${_T%%-*}
 		;;
 	"m4v"|"mp4"|"mov") 
